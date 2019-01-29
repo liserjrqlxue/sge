@@ -51,7 +51,7 @@ func main() {
 	flag.Parse()
 	fmt.Println(flag.Args())
 
-	var cmd = "qsub "
+	var cmd = ""
 	if *cwd {
 		cmd = cmd + "-cwd "
 	}
@@ -112,8 +112,8 @@ func main() {
 
 	cmd = cmd + " " + strings.Join(flag.Args(), " ")
 
-	fmt.Printf("run cmd:\n %s\n", cmd)
-	runCmd(cmd)
+	fmt.Printf("run cmd:\n qsub %s\n", cmd)
+	runCmd("qsub", cmd)
 }
 
 func commaSplit(str string) []string {
@@ -129,8 +129,8 @@ func str2map(strs []string, sep string) map[string]string {
 	return hash
 }
 
-func runCmd(cmd string) {
-	c := exec.Command(cmd)
+func runCmd(name, args string) {
+	c := exec.Command(name, args)
 	c.Stderr = os.Stderr
 	c.Stdout = os.Stdout
 	err := c.Run()
