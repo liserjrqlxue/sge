@@ -51,9 +51,9 @@ func main() {
 	flag.Parse()
 	fmt.Println(flag.Args())
 
-	var cmd = ""
+	var args []string
 	if *cwd {
-		cmd = cmd + "-cwd "
+		args = append(args, "-cwd")
 	}
 	if *hardResourceList != "" {
 		hrList := commaSplit(*hardResourceList)
@@ -82,7 +82,7 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
-	cmd = cmd + " -l " + *hardResourceList
+	args = append(args, "-l", *hardResourceList)
 
 	if *bingding != "" {
 		bd := commaSplit(*bingding)
@@ -96,10 +96,10 @@ func main() {
 	} else {
 		*bingding = "linear:" + strconv.Itoa(*numProc)
 	}
-	cmd = cmd + " -binding " + *bingding
+	args = append(args, "-binding", *bingding)
 
 	if *project != "" {
-		cmd = cmd + " -P " + *project
+		args = append(args, "-P", *project)
 	} else {
 		fmt.Println("no -P project to set project")
 		flag.Usage()
@@ -107,13 +107,13 @@ func main() {
 	}
 
 	if *queue != "" {
-		cmd = cmd + " -q " + *queue
+		args = append(args, "-q", *queue)
 	}
 
-	cmd = cmd + " " + strings.Join(flag.Args(), " ")
+	args = append(args, flag.Args()...)
 
-	fmt.Printf("run cmd:\n qsub %s\n", cmd)
-	runCmd("qsub", cmd)
+	fmt.Printf("run cmd:\n qsub %s\n", args)
+	runCmd("qsub", args...)
 }
 
 func commaSplit(str string) []string {
@@ -129,8 +129,8 @@ func str2map(strs []string, sep string) map[string]string {
 	return hash
 }
 
-func runCmd(name, args string) {
-	c := exec.Command(name, args)
+func runCmd(name string, args ...string) {
+	c := exec.Command(name, args...)
 	c.Stderr = os.Stderr
 	c.Stdout = os.Stdout
 	err := c.Run()
