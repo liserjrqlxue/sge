@@ -49,7 +49,7 @@ var (
 
 func main() {
 	flag.Parse()
-	fmt.Println(flag.Args())
+	fmt.Println("not parse args:", flag.Args())
 
 	var args []string
 	if *cwd {
@@ -112,7 +112,7 @@ func main() {
 
 	args = append(args, flag.Args()...)
 
-	fmt.Printf("run cmd:\n qsub %s\n", args)
+	fmt.Printf("run cmd:\n qsub %s\n", strings.Join(args, " "))
 	runCmd("qsub", args...)
 }
 
