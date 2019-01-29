@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 )
@@ -109,7 +110,10 @@ func main() {
 		cmd = cmd + " -q " + *queue
 	}
 
-	fmt.Printf("run cmd:\n  qsub %s %s", cmd, strings.Join(flag.Args(), " "))
+	cmd = cmd + " " + strings.Join(flag.Args(), " ")
+
+	fmt.Printf("run cmd:\n %s\n", cmd)
+	runCmd(cmd)
 }
 
 func commaSplit(str string) []string {
@@ -123,4 +127,12 @@ func str2map(strs []string, sep string) map[string]string {
 		hash[kv[0]] = kv[1]
 	}
 	return hash
+}
+
+func runCmd(cmd string) {
+	c := exec.Command(cmd)
+	c.Stderr = os.Stderr
+	c.Stdout = os.Stdout
+	err := c.Run()
+	fmt.Println(err)
 }
